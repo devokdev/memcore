@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "memcore"
+version = "0.1.0"
+description = "Intelligent Memory Infrastructure for AI Coding Agents"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "tiktoken>=0.5.0",
+    "mcp>=1.0.0",
+    "pytest>=7.0.0",
+]
