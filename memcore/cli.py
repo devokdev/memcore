@@ -168,6 +168,7 @@ def main():
 
     # dashboard
     p_dash = subparsers.add_parser("dashboard", help="Run web dashboard on port 8000")
+    p_dash.add_argument("--db", default=None, help="Path to memcore.db (defaults to current directory)")
 
     args = parser.parse_args()
 
@@ -180,6 +181,9 @@ def main():
         mcp_server.run()
     elif args.command == "dashboard":
         import uvicorn
+        if args.db:
+            os.environ["MEMCORE_DB_PATH"] = os.path.abspath(args.db)
+            os.environ["MEMCORE_REPO_ROOT"] = os.path.dirname(os.path.abspath(args.db))
         uvicorn.run("memcore.app:app", host="127.0.0.1", port=8000, reload=False)
 
 
