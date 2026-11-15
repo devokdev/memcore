@@ -765,28 +765,28 @@
           <!-- Steps -->
           <div style="display:flex; flex-direction:column; gap:20px;">
             <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:20px;">
-              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">STEP 1: INSTALL PACKAGE</div>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Install MemCore directly into your Python environment.</p>
-              <div class="cmd-box" onclick="copyCmd('pip install -e .', this)">
-                <code>pip install -e .</code>
+              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">OPTION A: ONE-LINE INSTALL (NO CLONING)</div>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Install directly from GitHub into any Python environment.</p>
+              <div class="cmd-box" onclick="copyCmd('pip install git+https://github.com/devokdev/memcore.git', this)">
+                <code>pip install git+https://github.com/devokdev/memcore.git</code>
                 <span class="copy-pill mono">copy</span>
               </div>
             </div>
 
             <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:20px;">
-              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">STEP 2: ACTIVATE ANY PROJECT (SINGLE COMMAND)</div>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Initializes local database, registers the global agent plugin, and activates the live memory engine.</p>
+              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">OPTION B: ONE-CLICK INSTALLER (ZERO TERMINAL)</div>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Clone or download the repo and double-click <strong>setup.bat</strong> (Windows) or run <strong>./setup.sh</strong> (macOS/Linux).</p>
+              <div class="cmd-box" onclick="copyCmd('git clone https://github.com/devokdev/memcore.git && cd memcore && setup.bat', this)">
+                <code>git clone ... &amp;&amp; setup.bat</code>
+                <span class="copy-pill mono">copy</span>
+              </div>
+            </div>
+
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:20px;">
+              <div class="mono" style="font-size:0.75rem; color:var(--green); margin-bottom:6px;">ACTIVATE ANY PROJECT (SINGLE COMMAND)</div>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Open terminal in any coding project and run:</p>
               <div class="cmd-box" onclick="copyCmd('memcore init', this)">
                 <code>memcore init</code>
-                <span class="copy-pill mono">copy</span>
-              </div>
-            </div>
-
-            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:20px;">
-              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">STEP 3: RUN THE BENCHMARK OR DASHBOARD</div>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Launch the live web dashboard or validate latency and token reduction on your system.</p>
-              <div class="cmd-box" onclick="copyCmd('memcore dashboard', this)">
-                <code>memcore dashboard</code>
                 <span class="copy-pill mono">copy</span>
               </div>
             </div>
