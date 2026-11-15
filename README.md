@@ -3,7 +3,7 @@
 > **Persistent, risk-aware memory for AI coding agents.**  
 > *Remember what matters. Retrieve what is relevant. Forget what is safe.*
 
----
+--- 
 
 ## 🌟 What is MemCore in Simple Words?
 
