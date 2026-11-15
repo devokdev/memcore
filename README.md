@@ -26,33 +26,37 @@ If you try to paste all past conversations into the agent, the prompt gets **blo
 
 ---
 
-## 🚀 Quickstart
+## 🚀 Quickstart (The Easiest Way)
 
-### 1. Installation
-
-Make sure you have **Python 3.10+** installed:
-
+### Option A: The One-Liner (No cloning required)
+Open your terminal (PowerShell, Command Prompt, or Bash) and run:
 ```bash
-git clone https://github.com/devokdev/memcore.git
-cd memcore
-pip install -e .
+pip install git+https://github.com/devokdev/memcore.git
+```
+Then, go to any project folder and activate it:
+```bash
+memcore init
 ```
 
 ---
 
-## ⚡ Instant One-Command Setup for Any Project
+### Option B: Clone & Double-Click (Zero Terminal Typing)
+1. Download or clone this repository:
+   ```bash
+   git clone https://github.com/devokdev/memcore.git
+   ```
+2. Double-click **`setup.bat`** (on Windows) or run `./setup.sh` (on Mac/Linux).
+3. **Done!** MemCore installs itself and sets up the global AI plugin automatically.
 
-To activate MemCore in **any new or existing project folder**, open a terminal in that project and run:
+---
 
+## ⚡ Using MemCore in Any Project
+
+Whenever you work in any project folder:
 ```bash
 memcore init
 ```
-*(or `python -m memcore.cli init`)*
-
-### What this single command does automatically:
-1. **Initializes Local Memory**: Sets up the project's local `memcore.db`.
-2. **Registers the Global Antigravity Plugin**: Installs MemCore into `~/.gemini/config/plugins/memcore/` and configures MCP server tools (`memory_add`, `memory_context_build`, `memory_gc`, etc.) so Antigravity instantly gains persistent memory across all workspaces.
-3. **Auto-Spawns the Floating Token HUD**: Launches the frameless, draggable Antigravity-styled pill bar floating right above your chatbox that tracks active tokens, pruned savings %, and protected invariants in real time.
+That's it! It automatically connects Antigravity, Cursor, and Claude to your project's memory.
 
 ---
 
