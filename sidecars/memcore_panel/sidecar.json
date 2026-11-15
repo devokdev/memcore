@@ -1,0 +1,21 @@
+{
+  "command": "python",
+  "args": ["server.py"],
+  "restart_policy": "always",
+  "display_name": "MemCore",
+  "description": "Live persistent memory monitor, active token gauge, and risk-aware MemGC panel.",
+  "has_web_ui": true,
+  "agent_permissions": {
+    "allows_user_interactions": true
+  },
+  "ui_config": {
+    "display_name": "MemCore",
+    "views": [
+      {
+        "path": "/",
+        "entrypoint": "SIDECAR_UI_ENTRYPOINT_AUX_PANE",
+        "title": "MemCore"
+      }
+    ]
+  }
+}

@@ -40,6 +40,22 @@ pip install -e .
 
 ---
 
+## ⚡ Instant One-Command Setup for Any Project
+
+To activate MemCore in **any new or existing project folder**, open a terminal in that project and run:
+
+```bash
+memcore init
+```
+*(or `python -m memcore.cli init`)*
+
+### What this single command does automatically:
+1. **Initializes Local Memory**: Sets up the project's local `memcore.db`.
+2. **Registers the Global Antigravity Plugin**: Installs MemCore into `~/.gemini/config/plugins/memcore/` and configures MCP server tools (`memory_add`, `memory_context_build`, `memory_gc`, etc.) so Antigravity instantly gains persistent memory across all workspaces.
+3. **Auto-Spawns the Floating Token HUD**: Launches the frameless, draggable Antigravity-styled pill bar floating right above your chatbox that tracks active tokens, pruned savings %, and protected invariants in real time.
+
+---
+
 ## 💻 All Commands You Can Use
 
 Here is the complete list of all commands available in MemCore:
@@ -86,6 +102,19 @@ python demo_presentation.py
 Runs the MCP stdio server to connect with Claude Desktop, Cursor, or Antigravity:
 ```bash
 python -m memcore.mcp_server
+```
+
+### 8. Launch the Visual Token Counter & HUD
+Launch the real-time visual token counter to monitor token consumption and savings while interacting with the agent or testing:
+```bash
+# Launch sleek floating desktop overlay (always-on-top, draggable)
+python memcore_hud.py
+
+# Or launch rich terminal live HUD
+python memcore_hud.py --mode terminal
+
+# Point to a specific database (e.g. from an experiment)
+python memcore_hud.py --db pitch_experiment/project_b_with_memcore/memcore.db
 ```
 
 ---

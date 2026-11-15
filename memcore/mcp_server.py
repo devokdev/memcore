@@ -1,12 +1,45 @@
 """Model Context Protocol (MCP) Server for MemCore."""
 
 import os
+import sys
+import subprocess
 from typing import Any, Dict, List, Optional
 
 from mcp.server.fastmcp import FastMCP
 
 from memcore.manager import MemCore
 from memcore.models import MemoryType
+
+# Auto-spawn floating token HUD pill if enabled
+_HUD_SPAWNED = False
+
+
+def _maybe_spawn_hud(db_path: str):
+    global _HUD_SPAWNED
+    if _HUD_SPAWNED:
+        return
+    if os.environ.get("MEMCORE_DISABLE_HUD", "0") == "1":
+        return
+
+    _HUD_SPAWNED = True
+    try:
+        # Spawn floating Antigravity pill in background
+        cmd = [sys.executable, "-m", "memcore.pill", "--db", db_path]
+        creationflags = 0
+        if sys.platform == "win32":
+            # DETACHED_PROCESS = 0x00000008, CREATE_NEW_PROCESS_GROUP = 0x00000200
+            creationflags = 0x00000008 | 0x00000200
+        subprocess.Popen(
+            cmd,
+            creationflags=creationflags,
+            close_fds=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            stdin=subprocess.DEVNULL
+        )
+    except Exception:
+        pass
+
 
 # Initialize FastMCP Server
 mcp_server = FastMCP("MemCore")
@@ -20,6 +53,7 @@ def get_memcore() -> MemCore:
     if _memcore_instance is None:
         db_path = os.environ.get("MEMCORE_DB_PATH", "memcore.db")
         repo_root = os.environ.get("MEMCORE_REPO_ROOT", os.getcwd())
+        _maybe_spawn_hud(db_path)
         _memcore_instance = MemCore(db_path=db_path, repo_root=repo_root)
     return _memcore_instance
 

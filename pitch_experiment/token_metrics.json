@@ -37,35 +37,35 @@
       "title": "Database Setup & Architecture",
       "tokens": 84,
       "active_memories": 3,
-      "relevance_score_avg": 0.376
+      "relevance_score_avg": 0.361
     },
     {
       "session": 2,
       "title": "OAuth2 PKCE Security Implementation",
       "tokens": 86,
       "active_memories": 5,
-      "relevance_score_avg": 0.367
+      "relevance_score_avg": 0.352
     },
     {
       "session": 3,
       "title": "Debugging Port & Cache Issues",
       "tokens": 90,
       "active_memories": 7,
-      "relevance_score_avg": 0.405
+      "relevance_score_avg": 0.429
     },
     {
       "session": 4,
       "title": "Stripe Payments Integration",
       "tokens": 94,
       "active_memories": 10,
-      "relevance_score_avg": 0.394
+      "relevance_score_avg": 0.414
     },
     {
       "session": 5,
       "title": "Production Auth Bugfix & Token Leak",
       "tokens": 93,
       "active_memories": 11,
-      "relevance_score_avg": 0.355
+      "relevance_score_avg": 0.395
     }
   ]
 }

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemCore</title>
+  <style>
+    :root {
+      --bg: #1e1e24;
+      --card-bg: #282830;
+      --border: #363642;
+      --border-subtle: #2d2d38;
+      --text: #efeff4;
+      --text-muted: #8e8e9c;
+      --text-title: #d4d4dc;
+      --dot-active: #4ade80;
+      --badge-bg: #22222a;
+      --badge-border: #32323e;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-family);
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 16px;
+      user-select: none;
+    }
+
+    /* Top Header Strip */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--dot-active);
+    }
+
+    .brand-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-title);
+      letter-spacing: 0.2px;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    /* Metric Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Memory Stream List */
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-title);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .memory-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .memory-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .memory-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .memory-type {
+      color: var(--text-muted);
+      font-family: monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .memory-protected {
+      color: #a78bfa;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(167, 139, 250, 0.1);
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(167, 139, 250, 0.2);
+    }
+
+    .memory-content {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .memory-tokens {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 24px 0;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="brand">
+      <div class="status-dot"></div>
+      <span class="brand-title">MemCore Persistent Memory</span>
+    </div>
+    <div class="status-badge" id="hud-status">Active</div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Active Tokens</div>
+      <div class="metric-value" id="val-tokens">0</div>
+      <div class="metric-sub" id="sub-tokens">Optimized prompt size</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Token Savings</div>
+      <div class="metric-value" id="val-savings">0.0%</div>
+      <div class="metric-sub" id="sub-savings">0 pruned tokens</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Verified Memories</div>
+      <div class="metric-value" id="val-mems">0</div>
+      <div class="metric-sub">Active in graph</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Protected Rules</div>
+      <div class="metric-value" id="val-protected">0</div>
+      <div class="metric-sub">Zero-loss guaranteed</div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <span>Active Project Knowledge</span>
+    <span style="font-weight: normal; color: var(--text-muted);" id="val-last-update">Live Sync</span>
+  </div>
+
+  <div class="memory-list" id="memory-list">
+    <div class="empty-state">No memories recorded yet in this workspace.</div>
+  </div>
+
+  <script>
+    async function updateStats() {
+      try {
+        const res = await fetch('/api/metrics');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('val-tokens').textContent = Number(data.active_tokens || 0).toLocaleString();
+        document.getElementById('val-savings').textContent = (data.savings_pct || 0) + '%';
+        document.getElementById('sub-savings').textContent = (data.pruned_tokens || 0) + ' pruned tokens';
+        document.getElementById('val-mems').textContent = data.active_memories || 0;
+        document.getElementById('val-protected').textContent = data.protected_count || 0;
+        document.getElementById('hud-status').textContent = data.active_memories > 0 ? (data.active_memories + ' active') : 'Listening';
+
+        const listContainer = document.getElementById('memory-list');
+        if (!data.memories || data.memories.length === 0) {
+          listContainer.innerHTML = '<div class="empty-state">Waiting for coding agent to store memories...</div>';
+          return;
+        }
+
+        listContainer.innerHTML = data.memories.map(m => `
+          <div class="memory-item">
+            <div class="memory-meta">
+              <span class="memory-type">${m.type}</span>
+              ${m.is_protected ? '<span class="memory-protected">Protected</span>' : ''}
+            </div>
+            <div class="memory-content">${escapeHtml(m.content)}</div>
+            <div class="memory-tokens">${m.token_count} tokens</div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    setInterval(updateStats, 1000);
+    updateStats();
+  </script>
+</body>
+</html>
