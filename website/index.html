@@ -3,11 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MemCore — Intelligent Memory Infrastructure for AI Coding Agents</title>
-  <meta name="description" content="Persistent memory and risk-aware garbage collection for AI coding agents. MemCore captures agent sessions, prunes noise, verifies against live code, and hands the right context back next time.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>MemCore — Persistent Memory Infrastructure for AI Coding Agents</title>
+  <meta name="description" content="Persistent memory and risk-aware MemGC for AI coding agents. 100% local, zero external dependencies, native Antigravity plugin.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,39 +13,21 @@
   <header class="nav-bar">
     <div class="wrap nav-inner">
       <a href="#top" class="nav-brand">
-        <div class="logo-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-        </div>
+        <div class="logo-icon">MC</div>
         <span>MemCore</span>
       </a>
 
       <nav class="nav-links">
-        <a href="#use-cases">Use cases</a>
         <a href="#features">Architecture</a>
-        <a href="#simulator">Token Funnel</a>
+        <a href="#simulator">Neural Matrix</a>
         <a href="#benchmarks">Benchmarks</a>
-        <a href="#agents">Agents</a>
+        <a href="#agents">Agents &amp; MCP</a>
         <a href="#install">Install</a>
       </nav>
 
       <div class="nav-actions">
-        <a class="nav-star" href="https://github.com/devokdev/memcore" target="_blank" rel="noreferrer">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
-          </svg>
-          <span class="mono">Open Source</span>
-        </a>
-
-        <button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
-            <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5Z"/>
-          </svg>
-        </button>
-
-        <a class="btn btn-solid" href="#install">Install MemCore</a>
+        <a class="btn btn-outline" href="https://github.com/devokdev/memcore" target="_blank">GitHub</a>
+        <a class="btn btn-solid" href="#install">Get Started</a>
       </div>
     </div>
   </header>
@@ -57,895 +36,225 @@
 
     <!-- HERO SECTION -->
     <section class="hero-section">
-      <div class="wrap hero-grid">
-        <div>
-          <a class="hero-chip" href="#install">
-            <span class="mono hero-chip-badge">v0.1.0</span>
-            <span class="hero-sep"></span>
-            <span>Apache-2.0 · Local-First Persistent Memory</span>
-          </a>
-
-          <h1 class="hero-title">
-            <div class="hero-title-line">
-              <span class="hero-rank mono">#1</span>
-              <span class="hero-highlight">persistent, risk-aware</span>
-            </div>
-            <div class="hero-title-line">
-              <span>memory for</span>
-              <span class="hero-slot slot-agents">
-                <span class="slot-agent-item active">
-                  <img src="https://svgl.app/library/claude-ai-icon.svg" alt="Claude" class="agent-hero-logo" onerror="this.style.display='none'">
-                  <span>Claude Code</span>
-                </span>
-                <span class="slot-agent-item">
-                  <img src="https://svgl.app/library/cursor_light.svg" alt="Cursor" class="agent-hero-logo" onerror="this.style.display='none'">
-                  <span>Cursor</span>
-                </span>
-                <span class="slot-agent-item">
-                  <img src="https://svgl.app/library/openai.svg" alt="Codex" class="agent-hero-logo" onerror="this.style.display='none'">
-                  <span>Codex</span>
-                </span>
-                <span class="slot-agent-item">
-                  <img src="https://svgl.app/library/antigravity.svg" alt="Antigravity" class="agent-hero-logo" onerror="this.style.display='none'">
-                  <span>Antigravity</span>
-                </span>
-                <span class="slot-agent-item">
-                  <img src="https://github.com/openclaw.png" alt="OpenClaw" class="agent-hero-logo" onerror="this.style.display='none'">
-                  <span>OpenClaw</span>
-                </span>
-                <span class="slot-agent-item">
-                  <img src="https://github.com/NousResearch.png" alt="Hermes" class="agent-hero-logo" onerror="this.style.display='none'">
-                  <span>Hermes</span>
-                </span>
-              </span>
-            </div>
-          </h1>
-
-          <p class="hero-lede">
-            Your coding agent starts every session from zero. <strong>MemCore</strong> captures what it did, prunes redundant noise via <strong>MemGC</strong>, verifies against live AST code, and hands the optimal context back next time.
-          </p>
-
-          <div class="hero-install-box">
-            <div class="cmd-box" onclick="copyCmd('pip install -e . && python -m memcore.app', this)">
-              <div>
-                <span class="cmd-prompt mono">$</span>
-                <code class="mono">pip install memcore &amp;&amp; memcore start</code>
-              </div>
-              <span class="copy-pill mono">copy</span>
-            </div>
-
-            <div class="hero-actions-row">
-              <div class="cmd-box" style="margin-bottom:0;" onclick="copyCmd('python -m memcore.mcp_server', this)">
-                <span class="cmd-prompt mono">⚡</span>
-                <code class="mono">MCP Server enabled (10 tools)</code>
-              </div>
-              <a href="http://127.0.0.1:8000" target="_blank" class="btn btn-ghost" style="padding: 10px 18px;">
-                Open Web Dashboard →
-              </a>
-            </div>
-          </div>
-
-          <div class="hero-facts">
-            <div class="hero-fact">
-              <dt class="mono">LongMemEval-S Recall@5</dt>
-              <dd class="mono">95.2% <a class="src" href="#benchmarks">source</a></dd>
-            </div>
-            <div class="hero-fact">
-              <dt class="mono">Critical Memory Loss</dt>
-              <dd class="mono" style="color:var(--green);">0.00% <a class="src" href="#features">MemGC</a></dd>
-            </div>
-            <div class="hero-fact">
-              <dt class="mono">Leaves Your Machine</dt>
-              <dd class="mono">0 bytes <a class="src" href="#local">local</a></dd>
-            </div>
-          </div>
-        </div>
-
-        <!-- Interactive 2D Visual Memory Canvas -->
-        <div class="visual-card">
-          <div class="visual-header">
-            <span class="mono">local SQLite store · 127.0.0.1:8000</span>
-            <span class="mono">230 observations · 5 clusters</span>
-          </div>
-          <div class="visual-canvas-wrap">
-            <canvas id="memory-canvas"></canvas>
-          </div>
-          <div class="visual-footer">
-            <span class="mono">● dots = captured tool calls</span>
-            <span class="mono" style="color:var(--accent);">move cursor to simulate recall ray</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PROOF NUMBERS STRIP -->
-    <section class="proof-strip">
       <div class="wrap">
-        <ul class="proof-list">
-          <li class="proof-item">
-            <a href="#benchmarks">
-              <span class="proof-val mono">18.4 ms</span>
-              <span class="proof-label mono">Median hybrid recall latency</span>
-            </a>
-          </li>
-          <li class="proof-item">
-            <a href="#simulator">
-              <span class="proof-val mono">92.0%</span>
-              <span class="proof-label mono">Context token reduction</span>
-            </a>
-          </li>
-          <li class="proof-item">
-            <a href="#features">
-              <span class="proof-val mono">0.00%</span>
-              <span class="proof-label mono">Protected memory loss guarantee</span>
-            </a>
-          </li>
-          <li class="proof-item">
-            <a href="#agents">
-              <span class="proof-val mono">25+</span>
-              <span class="proof-label mono">AI coding agents &amp; IDEs supported</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- MARQUEE FEATURED STRIP -->
-    <section class="featured-strip">
-      <div class="wrap">
-        <span class="featured-head mono">Compatible Architecture &amp; Citations</span>
-      </div>
-      <div class="marquee-track">
-        <div class="featured-badge mono">
-          <span>Model Context Protocol (MCP)</span> · <strong>10 Native Tools</strong>
-        </div>
-        <div class="featured-badge mono">
-          <span>MemGC Paradigm</span> · <strong>Risk-Aware Pruning Engine</strong>
-        </div>
-        <div class="featured-badge mono">
-          <span>LLM Wiki v2</span> · <strong>Bitemporal Knowledge Layer</strong>
-        </div>
-        <div class="featured-badge mono">
-          <span>FastAPI REST Server</span> · <strong>Real-time Dashboard :8000</strong>
-        </div>
-        <div class="featured-badge mono">
-          <span>SQLite FTS5 + On-Device Vectors</span> · <strong>100% Keyless Mode</strong>
-        </div>
-        <div class="featured-badge mono">
-          <span>Zero Secret Leakage</span> · <strong>Pre-Persistence Sanitizer</strong>
-        </div>
-        <!-- Duplicated for continuous smooth marquee loop -->
-        <div class="featured-badge mono">
-          <span>Model Context Protocol (MCP)</span> · <strong>10 Native Tools</strong>
-        </div>
-        <div class="featured-badge mono">
-          <span>MemGC Paradigm</span> · <strong>Risk-Aware Pruning Engine</strong>
-        </div>
-        <div class="featured-badge mono">
-          <span>LLM Wiki v2</span> · <strong>Bitemporal Knowledge Layer</strong>
-        </div>
-        <div class="featured-badge mono">
-          <span>FastAPI REST Server</span> · <strong>Real-time Dashboard :8000</strong>
-        </div>
-      </div>
-    </section>
-
-    <!-- USE CASES INTERACTIVE TABS -->
-    <section id="use-cases" class="section">
-      <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">Use cases</span>
-          <h2>What changes when your agent remembers with MemCore.</h2>
-          <p>Six scenarios that happen every day with coding agents, and how MemCore's hybrid memory and MemGC risk engine handle them.</p>
+        <div class="hero-chip">
+          <span class="mono hero-chip-badge">v0.1.0</span>
+          <span>·</span>
+          <span>Persistent Memory &amp; Real-Time Token Optimizer</span>
         </div>
 
-        <div class="use-cases-tabs">
-          <button class="tab-btn active" onclick="switchUseCase('agents', this)">
-            <span class="mono tab-num">01</span> One memory for every agent
-          </button>
-          <button class="tab-btn" onclick="switchUseCase('gc', this)">
-            <span class="mono tab-num">02</span> MemGC risk-aware pruning
-          </button>
-          <button class="tab-btn" onclick="switchUseCase('verify', this)">
-            <span class="mono tab-num">03</span> Code-grounded verification
-          </button>
-          <button class="tab-btn" onclick="switchUseCase('optimizer', this)">
-            <span class="mono tab-num">04</span> Token budget optimizer
-          </button>
-          <button class="tab-btn" onclick="switchUseCase('security', this)">
-            <span class="mono tab-num">05</span> Secret redaction &amp; safety
-          </button>
-          <button class="tab-btn" onclick="switchUseCase('local', this)">
-            <span class="mono tab-num">06</span> 100% Local-first store
-          </button>
+        <h1 class="hero-title">
+          Persistent, risk-aware memory<br>
+          for AI coding agents.
+        </h1>
+
+        <p class="hero-sub">
+          Coding agents lose their memory every time you open a new session. MemCore captures architectural invariants, AST-verifies code claims, prunes ephemeral noise with MemGC, and packs optimal context into prompt budgets.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-solid" href="#install">Install MemCore (Single Command)</a>
+          <a class="btn btn-outline" href="#simulator">Explore Neural Matrix</a>
         </div>
 
-        <div class="use-case-panel">
-          <p id="uc-why" style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 12px;">
-            MemCore connects Claude Code, Cursor, Codex, and Antigravity to a single, zero-loss memory substrate.
-          </p>
-
-          <div id="use-case-stage" class="use-case-stage">
-            <!-- Left Agent Terminal -->
-            <div class="terminal-window">
-              <div class="term-bar">
-                <span class="term-lights"><i></i><i></i><i></i></span>
-                <span id="uc-col1-title" class="term-title mono">claude-code · monday 14:02</span>
-              </div>
-              <div id="uc-col1-logs" class="term-body">
-                <div><span class="term-prompt">&gt;</span> fix oauth token leak on session expiration</div>
-                <div><span style="color:var(--accent);">⏺</span> Edit(src/auth/oauth.py)</div>
-                <div><span style="color:var(--accent);">⏺</span> Run(pytest tests/test_auth.py)</div>
-                <div class="term-success">⎿ 42 passed, 0 warnings</div>
-                <div class="term-badge">PostToolUse → memcore.record_memory()</div>
-              </div>
-            </div>
-
-            <!-- Central Hub -->
-            <div class="central-hub">
-              <span id="uc-hub-tag" class="hub-tag mono">memcore · 127.0.0.1:8000</span>
-              <p id="uc-hub-content" class="hub-content">
-                Always validate OAuth2 PKCE code_verifier before issuing tokens. Protected rule tagged.
-              </p>
-              <span id="uc-hub-from" class="mono" style="font-size:0.68rem; color:var(--text-dim);">captured from claude-code</span>
-            </div>
-
-            <!-- Right Agent Window -->
-            <div class="terminal-window">
-              <div class="term-bar">
-                <span class="term-lights"><i></i><i></i><i></i></span>
-                <span id="uc-col2-title" class="term-title mono">cursor · tuesday 10:15</span>
-              </div>
-              <div id="uc-col2-chat" class="term-body">
-                <div style="background:var(--bg-subtle); padding:8px 12px; border-radius:6px; margin-bottom:6px;">
-                  <div style="font-weight:600; color:var(--text); margin-bottom:2px;">› How should authentication tokens be validated?</div>
-                  <div class="term-badge" style="display:inline-block; margin-bottom:4px;">memcore_hybrid_recall · 1 protected result</div>
-                  <div style="color:var(--text-muted); font-size:0.78rem;">Validate code_verifier with SHA-256 PKCE contract; established Monday in oauth.py. Flagged with 100% confidence.</div>
-                </div>
-              </div>
-            </div>
+        <!-- Single Command Quickstart -->
+        <div class="install-card">
+          <div>
+            <div class="mono" style="font-size:11px; color:var(--accent); margin-bottom:4px;">ONE-COMMAND ACTIVATION FOR ANY PROJECT</div>
+            <div style="font-size:13px; color:var(--text-muted);">Initializes local storage, registers global Antigravity/MCP plugin, and spawns the live token HUD:</div>
           </div>
-
-          <div class="without-box">
-            <span class="without-badge mono">without memcore</span>
-            <span id="uc-without">Without MemCore: Each session starts blank. You re-prompt token constraints and risk regressions.</span>
+          <div class="cmd-box" onclick="copyCmd('memcore init', this)" style="max-width:320px;">
+            <code>memcore init</code>
+            <span class="copy-pill mono">copy</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TOKEN FUNNEL & SIMULATOR -->
-    <section id="simulator" class="section">
-      <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">Context Funnel</span>
-          <h2>The 8% of your project history that matters, every turn.</h2>
-          <p>A month of development across multiple agents generates 20,000+ tokens. Raw dumps cause hallucination and waste tokens. MemCore compacts it to the essential 1,500 tokens.</p>
-        </div>
-
-        <div class="funnel-container">
-          <!-- Raw History Box -->
-          <div class="funnel-box">
-            <div class="funnel-head mono">
-              <span>raw agent history</span>
-              <span style="color:var(--text);">19,462 tokens</span>
-            </div>
-            <div class="token-grid" role="img" aria-label="Token grid">
-              <!-- Grid blocks representing 100 tokens each -->
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq sel"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq sel"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq sel"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq sel"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq sel"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq sel"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq sel"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq sel"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq sel"></div><div class="token-sq"></div><div class="token-sq"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq sel"></div>
-              <div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div><div class="token-sq"></div>
-            </div>
-            <div style="margin-top:12px; font-size:0.75rem; color:var(--text-dim);" class="mono">
-              ■ Orange = high-utility context selected by MemCore
-            </div>
-          </div>
-
-          <!-- Central Pipeline -->
-          <div class="funnel-arrow">
-            <span class="mono">MemGC Pipeline</span>
-            <div style="background:var(--bg-card); border:1px solid var(--border); padding:12px; border-radius:6px; text-align:center;">
-              <div class="mono" style="font-size:0.72rem; color:var(--accent);">1. Ingest &amp; Redact</div>
-              <div class="mono" style="font-size:0.72rem; color:var(--green);">2. MemGC Prune</div>
-              <div class="mono" style="font-size:0.72rem; color:var(--cyan);">3. AST Ground</div>
-              <div class="mono" style="font-size:0.72rem; color:var(--purple);">4. Knapsack Pack</div>
-            </div>
-            <span>→</span>
-          </div>
-
-          <!-- Packed Context Window -->
-          <div class="funnel-box">
-            <div class="funnel-head mono">
-              <span>optimized context window</span>
-              <span style="color:var(--green);">1,571 tokens (8%)</span>
-            </div>
-            <div style="background:rgba(255,122,23,0.06); border:1px solid rgba(255,122,23,0.3); border-radius:6px; padding:16px; margin-bottom:12px;">
-              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">
-                SessionStart · Injected Relevant Memories
-              </div>
-              <p style="font-size:0.82rem; color:var(--text); line-height:1.5;">
-                • PKCE code_verifier contract active in <code>oauth.py</code>.<br>
-                • Database schema requires soft-delete flags on memory tables.<br>
-                • Never mock DB in integration tests; use test containers.
-              </p>
-            </div>
-            <div style="background:var(--bg-subtle); border:1px dashed var(--border); border-radius:6px; padding:20px; text-align:center;">
-              <span class="mono" style="font-size:0.85rem; color:var(--green);">
-                + 92% headroom free for agent task reasoning
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Interactive Live Simulation Tool -->
-        <div class="sim-card">
-          <div class="sim-controls">
-            <h3 style="font-size:1.1rem; margin-bottom:8px;">Interactive Token &amp; GC Simulator</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted);">
-              Adjust your project's raw conversation size and risk-utility threshold to see how MemCore optimizes prompt budget.
-            </p>
-
-            <div class="slider-group">
-              <label>
-                <span>Raw Agent History Size:</span>
-                <span id="sim-raw-val" class="mono">20,000 tokens</span>
-              </label>
-              <input type="range" id="sim-raw" min="5000" max="60000" step="1000" value="20000" oninput="updateSim()">
-            </div>
-
-            <div class="slider-group">
-              <label>
-                <span>MemGC Pruning Aggressiveness:</span>
-                <span id="sim-gc-val" class="mono">40%</span>
-              </label>
-              <input type="range" id="sim-gc" min="10" max="80" step="5" value="40" oninput="updateSim()">
-            </div>
-
-            <div class="slider-group">
-              <label>
-                <span>Max Context Budget Target:</span>
-                <span id="sim-budget-val" class="mono">2,000 tokens</span>
-              </label>
-              <input type="range" id="sim-budget" min="500" max="5000" step="250" value="2000" oninput="updateSim()">
-            </div>
-          </div>
-
-          <div class="sim-display">
-            <h4 class="mono" style="font-size:0.82rem; color:var(--text-muted); text-transform:uppercase;">Simulation Output</h4>
-            
-            <div class="sim-gauge-bar">
-              <div id="sim-bar-used" class="sim-gauge-used" style="width: 10%;"></div>
-              <div id="sim-bar-saved" class="sim-gauge-saved" style="width: 30%;"></div>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-dim);" class="mono">
-              <span>■ Injected Context</span>
-              <span>■ Pruned by MemGC</span>
-              <span>□ Clean Window</span>
-            </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;">
-              <div style="background:var(--bg-subtle); padding:12px; border-radius:6px; border:1px solid var(--border);">
-                <div class="mono" style="font-size:0.72rem; color:var(--text-muted);">FINAL PACKED CONTEXT</div>
-                <div id="sim-packed" class="mono" style="font-size:1.25rem; font-weight:700; color:var(--accent);">1,571 tokens</div>
-              </div>
-              <div style="background:var(--bg-subtle); padding:12px; border-radius:6px; border:1px solid var(--border);">
-                <div class="mono" style="font-size:0.72rem; color:var(--text-muted);">SAVED / PRUNED</div>
-                <div id="sim-saved" class="mono" style="font-size:1.25rem; font-weight:700; color:var(--green);">6,000 tokens (92%)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ARCHITECTURE TILES -->
+    <!-- ARCHITECTURE FEATURES -->
     <section id="features" class="section">
       <div class="wrap">
         <div class="section-head">
-          <span class="eyebrow">Architecture</span>
-          <h2>Built for production agent swarms.</h2>
-          <p>Every subcomponent in MemCore is designed with durability, zero data loss, and zero network latency in mind.</p>
+          <span class="eyebrow">Core Engine</span>
+          <h2>Designed for real-world agent memory.</h2>
+          <p>Local-first SQLite storage with code-grounded verification and zero loss on critical rules.</p>
         </div>
 
-        <div class="infra-grid">
-          <!-- Card 1 -->
-          <div class="infra-card">
-            <div>
-              <h3 class="mono">18 ms Hybrid Search</h3>
-              <p>Sub-20 millisecond hybrid retrieval combining SQLite FTS5 lexical BM25 matching and local vector cosine similarity with recency decay.</p>
-            </div>
-            <div class="gauge-wrap">
-              <svg width="200" height="100" viewBox="0 0 200 100">
-                <path d="M 20 90 A 70 70 0 0 1 180 90" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" stroke-linecap="round"/>
-                <path d="M 20 90 A 70 70 0 0 1 70 30" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round"/>
-                <text x="100" y="80" text-anchor="middle" fill="var(--text)" font-family="Geist Mono" font-weight="700" font-size="22">18.4 ms</text>
-              </svg>
-              <span class="mono" style="font-size:0.75rem; color:var(--text-dim);">Median on 1,000 observations</span>
-            </div>
-            <code class="cmd-box" style="margin-top:16px; font-size:0.75rem;">
-              mc.search_memories("auth", top_k=5)
-            </code>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-num">01 / PERSISTENCE</div>
+            <div class="feature-title">Cross-Session Retention</div>
+            <div class="feature-desc">Preserves project decisions, architecture contracts, and security rules across separate coding sessions and IDE restarts.</div>
           </div>
 
-          <!-- Card 2 -->
-          <div class="infra-card">
-            <div>
-              <h3 class="mono">MemGC Risk Engine</h3>
-              <p>Evaluates Utility (U) and Risk (R) across 8 lifecycle actions. Guarantees Zero Protected Memory Loss for security contracts and rules.</p>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:6px;">
-              <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                <span class="mono" style="color:var(--green);">PROTECT (Risk = 1.0)</span>
-                <span class="mono">NEVER PRUNED</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                <span class="mono" style="color:var(--accent);">COMPRESS / MERGE</span>
-                <span class="mono">Lossless phrasing</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                <span class="mono" style="color:var(--text-muted);">SUPERSEDE / ARCHIVE</span>
-                <span class="mono">Stale edits removed</span>
-              </div>
-            </div>
-            <code class="cmd-box" style="margin-top:16px; font-size:0.75rem;">
-              mc.preview_gc(allow_delete=False)
-            </code>
+          <div class="feature-card">
+            <div class="feature-num">02 / RISK-AWARE GC</div>
+            <div class="feature-title">MemGC Garbage Collection</div>
+            <div class="feature-desc">Prunes stale debug notes and dead port commands while preserving 100% of protected security constraints.</div>
           </div>
 
-          <!-- Card 3 -->
-          <div class="infra-card">
-            <div>
-              <h3 class="mono">AST Code Grounding</h3>
-              <p>Cross-examines stored memories with active disk files and AST signatures. Dead imports or renamed methods are caught and corrected.</p>
-            </div>
-            <div style="background:var(--bg-subtle); border:1px solid var(--border); border-radius:6px; padding:12px;">
-              <div class="mono" style="font-size:0.72rem; color:var(--green);">✓ Symbol Verified: oauth.py :: validate_pkce()</div>
-              <div class="mono" style="font-size:0.72rem; color:var(--cyan); margin-top:4px;">✓ AST Signature: SHA-256 verifier present</div>
-              <div class="mono" style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">• Confidence Score: 0.98</div>
-            </div>
-            <code class="cmd-box" style="margin-top:16px; font-size:0.75rem;">
-              mc.verify_memory(mem_id)
-            </code>
+          <div class="feature-card">
+            <div class="feature-num">03 / AST GROUNDED</div>
+            <div class="feature-title">Code Verification</div>
+            <div class="feature-desc">Parses local source code trees to verify symbol existence before returning memories to the agent to avoid hallucinations.</div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-num">04 / OPTIMIZATION</div>
+            <div class="feature-title">Token Budgeting</div>
+            <div class="feature-desc">Dynamically knapsack-packs only the most task-relevant memories into strict token limits (saving up to ~90% tokens).</div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-num">05 / PRIVACY</div>
+            <div class="feature-title">100% Local-First</div>
+            <div class="feature-desc">Runs entirely on 127.0.0.1 on your machine. Zero code or prompt bytes leave localhost.</div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-num">06 / PLUG &amp; PLAY</div>
+            <div class="feature-title">Unified MCP Standard</div>
+            <div class="feature-desc">Integrates out of the box with Antigravity, Cursor, and Claude Code via Model Context Protocol stdio.</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- BENCHMARKS INTERACTIVE SECTION -->
+    <!-- INTERACTIVE NEURAL MATRIX SIMULATOR -->
+    <section id="simulator" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Interactive Canvas</span>
+          <h2>Neural Memory Constellation.</h2>
+          <p>Hover over memory nodes to inspect live payload, type classification, and token weights.</p>
+        </div>
+
+        <div class="canvas-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted);">
+            <div>STATUS: <span style="color:var(--green); font-weight:600;">ACTIVE TOPOLOGY</span> · HYBRID GRAPH</div>
+            <div id="hover-payload">Hover any node to inspect memory</div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="memory-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENCHMARKS -->
     <section id="benchmarks" class="section">
       <div class="wrap">
         <div class="section-head">
-          <span class="eyebrow">Benchmarks</span>
-          <h2>It finds the right session, and sends less.</h2>
-          <p>Retrieval measured on LongMemEval-S, the academic long-term memory benchmark for coding agents, with zero network calls and keyless local embeddings.</p>
+          <span class="eyebrow">Empirical Results</span>
+          <h2>Tested across multi-session dev tasks.</h2>
+          <p>Direct experimental comparison between standard agent accumulation vs. MemCore.</p>
         </div>
 
-        <div class="bench-box">
-          <div class="bench-head">
-            <span class="mono">LongMemEval-S · 500 Questions · Visual Dot Matrix</span>
-            <div class="bench-toggle">
-              <button class="active" onclick="setBenchMode(5, this)">top 5</button>
-              <button onclick="setBenchMode(10, this)">top 10</button>
+        <div class="bench-grid">
+          <div class="bench-card">
+            <h3 style="font-size:15px; margin-bottom:12px; color:var(--red);">Without MemCore (Standard Accumulation)</h3>
+            <div class="bench-row">
+              <span class="text-muted">Prompt Context Size</span>
+              <span class="mono">3,159+ tokens (Bloated)</span>
+            </div>
+            <div class="bench-row">
+              <span class="text-muted">Stale Scratchpads Retained</span>
+              <span class="mono">100% (Port kills, temp flags)</span>
+            </div>
+            <div class="bench-row">
+              <span class="text-muted">Hallucination Risk</span>
+              <span class="mono">High (Refers to deleted code)</span>
             </div>
           </div>
 
-          <p id="bench-verdict" style="font-size:1.1rem; margin-bottom:20px;">
-            <strong>476 of 500</strong> questions found gold context in top 5 (<strong>95.2%</strong> Recall@5).
-          </p>
-
-          <div class="bench-groups">
-            <!-- Group 1 -->
-            <div>
-              <div class="group-header mono">
-                <span>Knowledge-Update (77 / 78 gold hits)</span>
-                <span>98.7%</span>
-              </div>
-              <div class="dot-row">
-                <!-- 50 sample dots -->
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot miss"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-              </div>
+          <div class="bench-card">
+            <h3 style="font-size:15px; margin-bottom:12px; color:var(--green);">With MemCore Engine</h3>
+            <div class="bench-row">
+              <span class="text-muted">Optimized Context Prompt</span>
+              <span class="mono" style="color:var(--green);">323 tokens (-89.8%)</span>
             </div>
-
-            <!-- Group 2 -->
-            <div>
-              <div class="group-header mono">
-                <span>Multi-Session Reasoning (130 / 133 gold hits)</span>
-                <span>97.7%</span>
-              </div>
-              <div class="dot-row">
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot miss"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-              </div>
+            <div class="bench-row">
+              <span class="text-muted">MemGC Pruned Savings</span>
+              <span class="mono">~2,836 tokens saved</span>
             </div>
-
-            <!-- Group 3 -->
-            <div>
-              <div class="group-header mono">
-                <span>Temporal Contradiction Resolution (127 / 133 gold hits)</span>
-                <span>95.4%</span>
-              </div>
-              <div class="dot-row">
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot miss"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-                <span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span><span class="b-dot hit"></span>
-              </div>
+            <div class="bench-row">
+              <span class="text-muted">Protected Security Invariants</span>
+              <span class="mono" style="color:var(--purple);">0.00% Loss Guaranteed</span>
             </div>
           </div>
-
-          <table class="bench-table">
-            <thead>
-              <tr>
-                <th>RECALL ALGORITHM</th>
-                <th>R@5</th>
-                <th>R@10</th>
-                <th>R@20</th>
-                <th>LATENCY</th>
-                <th>ZERO LOSS GUARANTEE</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>MemCore Hybrid (FTS5 + Vectors + MemGC)</strong></td>
-                <td class="highlight">95.2%</td>
-                <td class="highlight">98.6%</td>
-                <td class="highlight">99.4%</td>
-                <td class="mono">18.4 ms</td>
-                <td style="color:var(--green); font-weight:600;">100.0% (Zero loss)</td>
-              </tr>
-              <tr>
-                <td>FTS5 BM25 Only (Keyless)</td>
-                <td>86.2%</td>
-                <td>94.6%</td>
-                <td>98.6%</td>
-                <td class="mono">4.2 ms</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Vanilla Vector Store (No GC)</td>
-                <td>82.4%</td>
-                <td>89.1%</td>
-                <td>93.5%</td>
-                <td class="mono">45.0 ms</td>
-                <td style="color:var(--red);">Pruning Loss Occurs</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </section>
 
-    <!-- AGENT INTEGRATIONS GRID -->
+    <!-- AGENTS & MCP INTEGRATION -->
     <section id="agents" class="section">
       <div class="wrap">
         <div class="section-head">
-          <span class="eyebrow">Works with</span>
-          <h2>25+ Agents. One shared memory.</h2>
-          <p>Switch agents freely during your workday. Every agent below connects natively to MemCore via MCP or REST.</p>
+          <span class="eyebrow">Integration</span>
+          <h2>Compatible with your favorite coding agents.</h2>
+          <p>MemCore exposes standardized Model Context Protocol tools to any modern IDE.</p>
         </div>
 
         <div class="agents-grid">
-          <!-- Claude Code -->
           <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">CC</div>
-              <div>
-                <div class="agent-name">Claude Code</div>
-                <div class="agent-tag mono">Native hooks, MCP, skills</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect claude-code</code>
+            <div class="agent-name">Antigravity</div>
+            <div class="agent-desc">Global plugin, live in-chat generative UI, and memory protocol.</div>
+            <code class="mono" style="font-size:11px; color:var(--accent);">memcore init</code>
           </div>
-
-          <!-- Antigravity -->
-          <div class="agent-card" style="border-color: rgba(255, 122, 23, 0.4);">
-            <div class="agent-top">
-              <div class="agent-icon" style="background:var(--accent); color:#fff;">AG</div>
-              <div>
-                <div class="agent-name">Antigravity</div>
-                <div class="agent-tag mono">MCP server &amp; IDE hook</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect antigravity</code>
-          </div>
-
-          <!-- Cursor -->
           <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">CU</div>
-              <div>
-                <div class="agent-name">Cursor</div>
-                <div class="agent-tag mono">Rule integration &amp; MCP</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect cursor</code>
+            <div class="agent-name">Cursor</div>
+            <div class="agent-desc">Connect via MCP stdio in .cursor/mcp.json.</div>
+            <code class="mono" style="font-size:11px; color:var(--text-muted);">python -m memcore.mcp_server</code>
           </div>
-
-          <!-- Codex CLI -->
           <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">CX</div>
-              <div>
-                <div class="agent-name">Codex CLI</div>
-                <div class="agent-tag mono">CLI hook, MCP plugin</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect codex</code>
+            <div class="agent-name">Claude Code</div>
+            <div class="agent-desc">Hooks and stdio MCP server support.</div>
+            <code class="mono" style="font-size:11px; color:var(--text-muted);">claude_desktop_config.json</code>
           </div>
-
-          <!-- Devin -->
           <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">DV</div>
-              <div>
-                <div class="agent-name">Devin</div>
-                <div class="agent-tag mono">Session skills &amp; REST</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect devin</code>
-          </div>
-
-          <!-- OpenClaw -->
-          <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">OC</div>
-              <div>
-                <div class="agent-name">OpenClaw</div>
-                <div class="agent-tag mono">Gateway plugin, MCP</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect openclaw</code>
-          </div>
-
-          <!-- Zed -->
-          <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">ZD</div>
-              <div>
-                <div class="agent-name">Zed</div>
-                <div class="agent-tag mono">Context server, MCP</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect zed</code>
-          </div>
-
-          <!-- Warp -->
-          <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">WP</div>
-              <div>
-                <div class="agent-name">Warp</div>
-                <div class="agent-tag mono">Terminal MCP agent</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect warp</code>
+            <div class="agent-name">Python SDK</div>
+            <div class="agent-desc">Direct programmatic API for custom AI agents and pipelines.</div>
+            <code class="mono" style="font-size:11px; color:var(--text-muted);">from memcore import MemCore</code>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- INSTALL & MCP CONFIG -->
+    <!-- INSTALLATION -->
     <section id="install" class="section">
       <div class="wrap">
         <div class="section-head">
           <span class="eyebrow">Quickstart</span>
-          <h2>Install in 30 seconds.</h2>
-          <p>Python 3.10 or newer. Runs 100% on localhost with zero external credentials needed.</p>
+          <h2>Install in under 30 seconds.</h2>
+          <p>Requires Python 3.10+. Zero external databases or cloud API keys needed.</p>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:32px;">
-          <!-- Steps -->
-          <div style="display:flex; flex-direction:column; gap:20px;">
-            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:20px;">
-              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">STEP 1: INSTALL PACKAGE</div>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Install MemCore directly into your Python environment.</p>
-              <div class="cmd-box" onclick="copyCmd('pip install -e .', this)">
-                <code>pip install -e .</code>
-                <span class="copy-pill mono">copy</span>
-              </div>
-            </div>
-
-            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:20px;">
-              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">STEP 2: START DASHBOARD &amp; REST API</div>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Starts the real-time visual web explorer and REST endpoints on 127.0.0.1:8000.</p>
-              <div class="cmd-box" onclick="copyCmd('python -m uvicorn memcore.app:app --host 127.0.0.1 --port 8000', this)">
-                <code>python -m uvicorn memcore.app:app --port 8000</code>
-                <span class="copy-pill mono">copy</span>
-              </div>
-            </div>
-
-            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:20px;">
-              <div class="mono" style="font-size:0.75rem; color:var(--accent); margin-bottom:6px;">STEP 3: RUN THE BENCHMARK</div>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Validate latency, token reduction, and zero protected loss on your system.</p>
-              <div class="cmd-box" onclick="copyCmd('python -m benchmarks.benchmark_run', this)">
-                <code>python -m benchmarks.benchmark_run</code>
-                <span class="copy-pill mono">copy</span>
-              </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div class="feature-card">
+            <div class="mono" style="font-size:11px; color:var(--accent); margin-bottom:8px;">STEP 1: INSTALL PACKAGE</div>
+            <div class="cmd-box" onclick="copyCmd('pip install -e .', this)" style="margin-top:10px;">
+              <code>pip install -e .</code>
+              <span class="copy-pill mono">copy</span>
             </div>
           </div>
 
-          <!-- MCP Server JSON -->
-          <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:24px; display:flex; flex-direction:column; justify-content:space-between;">
-            <div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h3 style="font-size:1.05rem;">MCP Configuration</h3>
-                <button type="button" class="btn btn-ghost" onclick="copyCmd('{\n  &quot;mcpServers&quot;: {\n    &quot;memcore&quot;: {\n      &quot;command&quot;: &quot;python&quot;,\n      &quot;args&quot;: [&quot;-m&quot;, &quot;memcore.mcp_server&quot;],\n      &quot;env&quot;: {\n        &quot;MEMCORE_DB_PATH&quot;: &quot;memcore.db&quot;,\n        &quot;MEMCORE_REPO_ROOT&quot;: &quot;.&quot;\n      }\n    }\n  }\n}', this)">
-                  Copy JSON
-                </button>
-              </div>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">
-                Paste this into your Claude Desktop, Antigravity, or Cursor MCP configuration:
-              </p>
-              <pre class="terminal-window" style="padding:16px; font-size:0.8rem; line-height:1.6;"><code>{
-  "mcpServers": {
-    "memcore": {
-      "command": "python",
-      "args": ["-m", "memcore.mcp_server"],
-      "env": {
-        "MEMCORE_DB_PATH": "memcore.db",
-        "MEMCORE_REPO_ROOT": "."
-      }
-    }
-  }
-}</code></pre>
-            </div>
-            <div style="font-size:0.75rem; color:var(--text-dim); margin-top:16px;" class="mono">
-              ✓ Exposes memory_add, memory_search, memory_verify, memory_gc_preview, memory_stats
+          <div class="feature-card">
+            <div class="mono" style="font-size:11px; color:var(--accent); margin-bottom:8px;">STEP 2: ACTIVATE IN ANY PROJECT</div>
+            <div class="cmd-box" onclick="copyCmd('memcore init', this)" style="margin-top:10px;">
+              <code>memcore init</code>
+              <span class="copy-pill mono">copy</span>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq" class="section">
-      <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">FAQ</span>
-          <h2>Frequently asked questions.</h2>
-        </div>
-
-        <div class="faq-list">
-          <details class="faq-item" open>
-            <summary>What makes MemCore different from plain vector stores?</summary>
-            <p>
-              Plain vector stores blindly hoard conversation text until prompt windows blow up. MemCore adds <strong>MemGC risk-aware garbage collection</strong> with utility scoring, deduplication, and code AST verification. It guarantees that critical database contracts and security policies can never be pruned, while saving up to 92% in token overhead.
-            </p>
-          </details>
-
-          <details class="faq-item">
-            <summary>Does any proprietary code leave my computer?</summary>
-            <p>
-              <strong>Zero bytes.</strong> MemCore binds exclusively to <code>127.0.0.1:8000</code>. All FTS5 keyword indexing, vector embeddings, and AST verifications execute completely on-device.
-            </p>
-          </details>
-
-          <details class="faq-item">
-            <summary>Do I need an OpenAI or third-party API key?</summary>
-            <p>
-              <strong>No API key required.</strong> MemCore works out of the box with zero external dependencies. SQLite FTS5 handles keyword retrieval and local embedding engines run on your CPU/GPU.
-            </p>
-          </details>
-
-          <details class="faq-item">
-            <summary>What is the Zero Protected Memory Loss guarantee?</summary>
-            <p>
-              Memories tagged with <code>is_protected=True</code> (such as database migration invariants, authentication requirements, or user rules) are assigned a Risk score <em>R = 1.0</em>. The MemGC optimizer enforces a mathematical invariant that prevents deletion or destructive compaction of these records regardless of age.
-            </p>
-          </details>
-
-          <details class="faq-item">
-            <summary>How is MemCore licensed?</summary>
-            <p>
-              Apache-2.0. Completely free, open source, and modifiable for commercial or private use.
-            </p>
-          </details>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="wrap footer-ask">
-      <div>
-        <span class="eyebrow">AI Assistant Help</span>
-        <p style="font-size:0.9rem; color:var(--text-muted);">Inspect MemCore architecture and prompt documentation.</p>
-      </div>
-      <div style="display:flex; gap:12px;">
-        <a class="btn btn-ghost" href="http://127.0.0.1:8000" target="_blank">Open Dashboard</a>
-        <a class="btn btn-solid" href="#install">Install Now</a>
-      </div>
-    </div>
-
-    <div class="wrap footer-grid">
-      <div class="footer-col">
-        <a href="#top" class="nav-brand" style="margin-bottom:12px;">
-          <div class="logo-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span>MemCore</span>
-        </a>
-        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; max-width:280px; margin-bottom:12px;">
-          Intelligent persistent memory and MemGC risk-aware garbage collection for AI coding agents.
-        </p>
-        <span class="mono" style="font-size:0.75rem; color:var(--text-dim);">v0.1.0 · Apache-2.0 License</span>
-      </div>
-
-      <div class="footer-col">
-        <h4>Architecture</h4>
-        <ul>
-          <li><a href="#features">Hybrid Retrieval</a></li>
-          <li><a href="#features">MemGC Risk Engine</a></li>
-          <li><a href="#features">AST Code Grounding</a></li>
-          <li><a href="#simulator">Token Optimizer</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Integrations</h4>
-        <ul>
-          <li><a href="#agents">Claude Code</a></li>
-          <li><a href="#agents">Antigravity</a></li>
-          <li><a href="#agents">Cursor</a></li>
-          <li><a href="#agents">Model Context Protocol</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Benchmarks</h4>
-        <ul>
-          <li><a href="#benchmarks">LongMemEval-S</a></li>
-          <li><a href="#benchmarks">Recall@5 (95.2%)</a></li>
-          <li><a href="#benchmarks">Zero Loss Guarantee</a></li>
-          <li><a href="#benchmarks">Latency (18.4ms)</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Developers</h4>
-        <ul>
-          <li><a href="http://127.0.0.1:8000" target="_blank">Web Dashboard</a></li>
-          <li><a href="#install">Quickstart</a></li>
-          <li><a href="#faq">FAQ</a></li>
-          <li><a href="https://github.com/devokdev/memcore" target="_blank">GitHub Repo</a></li>
-        </ul>
-      </div>
-    </div>
+  <footer class="wrap">
+    <div>MemCore — Open Source Persistent Memory for AI Agents</div>
+    <div>Apache-2.0 License · 100% Local First</div>
   </footer>
-
-  <!-- Toast Notification element -->
-  <div id="toast" class="toast">Copied to clipboard</div>
 
   <script src="script.js"></script>
 </body>
