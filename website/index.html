@@ -106,22 +106,23 @@
           </p>
 
           <div class="hero-install-box">
-            <div class="cmd-box" onclick="copyCmd('pip install -e . && python -m memcore.app', this)">
+            <div class="cmd-box" onclick="copyCmd('memcore init', this)">
               <div>
                 <span class="cmd-prompt mono">$</span>
-                <code class="mono">pip install memcore &amp;&amp; memcore start</code>
+                <code class="mono">memcore init</code>
               </div>
               <span class="copy-pill mono">copy</span>
             </div>
 
             <div class="hero-actions-row">
-              <div class="cmd-box" style="margin-bottom:0;" onclick="copyCmd('python -m memcore.mcp_server', this)">
+              <div class="cmd-box" style="margin-bottom:0;" onclick="copyCmd('memcore hud', this)">
                 <span class="cmd-prompt mono">⚡</span>
-                <code class="mono">MCP Server enabled (10 tools)</code>
+                <code class="mono">memcore hud (Live Token HUD)</code>
               </div>
-              <a href="http://127.0.0.1:8000" target="_blank" class="btn btn-ghost" style="padding: 10px 18px;">
-                Open Web Dashboard →
-              </a>
+              <div class="cmd-box" style="margin-bottom:0;" onclick="copyCmd('memcore dashboard', this)">
+                <span class="cmd-prompt mono">📊</span>
+                <code class="mono">memcore dashboard (Port 8000)</code>
+              </div>
             </div>
           </div>
 
@@ -652,28 +653,16 @@
         </div>
 
         <div class="agents-grid">
-          <!-- Claude Code -->
-          <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">CC</div>
-              <div>
-                <div class="agent-name">Claude Code</div>
-                <div class="agent-tag mono">Native hooks, MCP, skills</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect claude-code</code>
-          </div>
-
           <!-- Antigravity -->
           <div class="agent-card" style="border-color: rgba(255, 122, 23, 0.4);">
             <div class="agent-top">
               <div class="agent-icon" style="background:var(--accent); color:#fff;">AG</div>
               <div>
                 <div class="agent-name">Antigravity</div>
-                <div class="agent-tag mono">MCP server &amp; IDE hook</div>
+                <div class="agent-tag mono">Global plugin, MCP &amp; Generative UI</div>
               </div>
             </div>
-            <code class="agent-cmd mono">memcore connect antigravity</code>
+            <code class="agent-cmd mono">memcore init</code>
           </div>
 
           <!-- Cursor -->
@@ -682,13 +671,25 @@
               <div class="agent-icon">CU</div>
               <div>
                 <div class="agent-name">Cursor</div>
-                <div class="agent-tag mono">Rule integration &amp; MCP</div>
+                <div class="agent-tag mono">Rules integration &amp; MCP Server</div>
               </div>
             </div>
-            <code class="agent-cmd mono">memcore connect cursor</code>
+            <code class="agent-cmd mono">memcore init</code>
           </div>
 
-          <!-- Codex CLI -->
+          <!-- Claude Code -->
+          <div class="agent-card">
+            <div class="agent-top">
+              <div class="agent-icon">CC</div>
+              <div>
+                <div class="agent-name">Claude Code</div>
+                <div class="agent-tag mono">Stdio MCP server &amp; Skills</div>
+              </div>
+            </div>
+            <code class="agent-cmd mono">memcore init</code>
+          </div>
+
+          <!-- OpenAI Codex -->
           <div class="agent-card">
             <div class="agent-top">
               <div class="agent-icon">CX</div>
@@ -697,19 +698,7 @@
                 <div class="agent-tag mono">CLI hook, MCP plugin</div>
               </div>
             </div>
-            <code class="agent-cmd mono">memcore connect codex</code>
-          </div>
-
-          <!-- Devin -->
-          <div class="agent-card">
-            <div class="agent-top">
-              <div class="agent-icon">DV</div>
-              <div>
-                <div class="agent-name">Devin</div>
-                <div class="agent-tag mono">Session skills &amp; REST</div>
-              </div>
-            </div>
-            <code class="agent-cmd mono">memcore connect devin</code>
+            <code class="agent-cmd mono">memcore init</code>
           </div>
 
           <!-- OpenClaw -->
@@ -721,7 +710,7 @@
                 <div class="agent-tag mono">Gateway plugin, MCP</div>
               </div>
             </div>
-            <code class="agent-cmd mono">memcore connect openclaw</code>
+            <code class="agent-cmd mono">memcore init</code>
           </div>
 
           <!-- Zed -->
@@ -733,19 +722,31 @@
                 <div class="agent-tag mono">Context server, MCP</div>
               </div>
             </div>
-            <code class="agent-cmd mono">memcore connect zed</code>
+            <code class="agent-cmd mono">memcore init</code>
           </div>
 
-          <!-- Warp -->
+          <!-- Devin -->
           <div class="agent-card">
             <div class="agent-top">
-              <div class="agent-icon">WP</div>
+              <div class="agent-icon">DV</div>
               <div>
-                <div class="agent-name">Warp</div>
-                <div class="agent-tag mono">Terminal MCP agent</div>
+                <div class="agent-name">Devin</div>
+                <div class="agent-tag mono">Session skills &amp; REST</div>
               </div>
             </div>
-            <code class="agent-cmd mono">memcore connect warp</code>
+            <code class="agent-cmd mono">memcore server</code>
+          </div>
+
+          <!-- Python SDK -->
+          <div class="agent-card">
+            <div class="agent-top">
+              <div class="agent-icon" style="background:#3b82f6; color:#fff;">PY</div>
+              <div>
+                <div class="agent-name">Python SDK</div>
+                <div class="agent-tag mono">Direct programmatic library</div>
+              </div>
+            </div>
+            <code class="agent-cmd mono">from memcore import MemCore</code>
           </div>
         </div>
       </div>
