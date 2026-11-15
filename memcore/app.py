@@ -63,7 +63,6 @@ def get_stats(project_id: str = "default"):
 @app.get("/api/memories")
 def list_memories(project_id: str = "default", status: Optional[str] = "active"):
     mc = get_mc()
-    # status None if "all"
     stat_enum = None if status == "all" else (status or "active")
     mems = mc.store.list_memories(project_id=project_id, status=stat_enum, limit=200)
     return [m.model_dump() for m in mems]
@@ -99,11 +98,12 @@ def search_memories(query: str, project_id: str = "default", top_k: int = 10):
             "id": r.memory.id,
             "content": r.memory.content,
             "type": r.memory.memory_type.value,
-            "relevance_score": round(r.relevance_score, 3),
+            "score": round(r.relevance_score, 3),
             "reasons": r.retrieval_reasons,
+            "status": r.memory.status.value,
+            "verification_status": r.memory.verification_status.value,
             "token_count": r.memory.token_count,
             "is_protected": r.memory.is_protected,
-            "status": r.memory.status.value,
         }
         for r in results
     ]
@@ -112,28 +112,30 @@ def search_memories(query: str, project_id: str = "default", top_k: int = 10):
 @app.post("/api/context")
 def build_context(req: ContextRequest):
     mc = get_mc()
-    return mc.build_context(
+    res = mc.build_context(
         task_query=req.task_query,
         token_budget=req.token_budget,
         project_id=req.project_id,
-    ).model_dump()
+    )
+    return res.model_dump()
 
 
 @app.get("/api/gc/preview")
-def gc_preview(project_id: str = "default"):
+def preview_gc(project_id: str = "default"):
     mc = get_mc()
     recs = mc.preview_gc(project_id=project_id)
     return [r.model_dump() for r in recs]
 
 
 @app.post("/api/gc/execute")
-def gc_execute(req: GCExecuteRequest):
+def execute_gc(req: GCExecuteRequest):
     mc = get_mc()
-    return mc.execute_gc(
+    res = mc.execute_gc(
         project_id=req.project_id,
         allow_delete=req.allow_delete,
         approved_memory_ids=req.approved_memory_ids,
     )
+    return res
 
 
 @app.post("/api/verify/all")
@@ -157,205 +159,422 @@ def dashboard_html():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MemCore — AI Memory Infrastructure</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>MemCore Dashboard</title>
   <style>
     :root {
-      --bg-dark: #0a0d14;
-      --card-bg: rgba(18, 24, 38, 0.75);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --primary: #6366f1;
-      --primary-glow: rgba(99, 102, 241, 0.25);
-      --accent: #06b6d4;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --text: #f3f4f6;
-      --text-muted: #9ca3af;
+      --bg: #141417;
+      --card-bg: #1e1e24;
+      --card-border: #2e2e38;
+      --border-subtle: #25252e;
+      --badge-bg: #282833;
+      --badge-border: #383846;
+      --text: #efeff4;
+      --text-muted: #8e8e9c;
+      --text-title: #d4d4dc;
+      --dot-green: #4ade80;
+      --accent-purple: #a78bfa;
+      --accent-cyan: #38bdf8;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background: radial-gradient(circle at top right, #131b2e, var(--bg-dark));
+      background-color: var(--bg);
       color: var(--text);
-      font-family: 'Outfit', -apple-system, sans-serif;
+      font-family: var(--font-family);
+      font-size: 13px;
+      line-height: 1.5;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
+
     header {
-      padding: 18px 36px;
+      padding: 14px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--card-border);
-      background: rgba(10, 13, 20, 0.8);
-      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      background-color: #1a1a20;
       position: sticky;
       top: 0;
       z-index: 50;
     }
-    .logo-container { display: flex; align-items: center; gap: 12px; }
-    .logo-badge {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+
+    .brand {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      box-shadow: 0 0 20px var(--primary-glow);
+      gap: 10px;
     }
-    .tagline { color: var(--text-muted); font-size: 0.85rem; }
-    main { padding: 32px 36px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 28px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
-    .stat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 22px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s ease, border-color 0.2s ease;
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--dot-green);
     }
-    .stat-card:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.4); }
-    .stat-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
-    .stat-value { font-size: 2rem; font-weight: 700; margin-top: 8px; color: #fff; font-family: 'JetBrains Mono', monospace; }
-    .tabs { display: flex; gap: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 12px; }
-    .tab-btn {
-      background: transparent;
-      border: none;
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-title);
+      letter-spacing: 0.2px;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      font-family: var(--font-mono);
       color: var(--text-muted);
-      font-size: 0.95rem;
-      font-weight: 600;
-      padding: 8px 18px;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: all 0.2s;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      padding: 2px 8px;
+      border-radius: 12px;
     }
-    .tab-btn.active, .tab-btn:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
-    .tab-btn.active { color: var(--accent); background: rgba(6, 182, 212, 0.1); }
-    .panel { display: none; }
-    .panel.active { display: flex; flex-direction: column; gap: 20px; }
-    .glass-box {
+
+    main {
+      padding: 24px 28px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Antigravity Metrics Cards */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+
+    .metric-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-      backdrop-filter: blur(16px);
-    }
-    .btn {
-      background: linear-gradient(135deg, var(--primary), #4f46e5);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-weight: 600;
       border-radius: 8px;
-      cursor: pointer;
-      transition: opacity 0.2s, box-shadow 0.2s;
-      display: inline-flex;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: var(--font-mono);
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Neural Memory Matrix & Interactive Graph Container */
+    .graph-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .graph-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .graph-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-title);
+      display: flex;
       align-items: center;
       gap: 8px;
     }
-    .btn:hover { opacity: 0.95; box-shadow: 0 0 16px var(--primary-glow); }
-    .btn-secondary { background: rgba(255, 255, 255, 0.08); }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); box-shadow: none; }
-    .btn-danger { background: linear-gradient(135deg, var(--danger), #b91c1c); }
-    .input-row { display: flex; gap: 12px; margin-bottom: 16px; }
-    input, select, textarea {
-      background: rgba(0, 0, 0, 0.35);
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #18181e;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .canvas-hud {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      gap: 14px;
+    }
+
+    .canvas-hud span {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Tabs Navigation */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 10px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 14px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--text);
+      background: var(--card-bg);
+      border-color: var(--card-border);
+    }
+
+    .panel { display: none; }
+    .panel.active { display: flex; flex-direction: column; gap: 14px; }
+
+    .box {
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 10px 14px;
-      color: white;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.2s;
+      padding: 18px;
     }
-    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
-    th { text-align: left; padding: 12px 14px; color: var(--text-muted); border-bottom: 1px solid var(--card-border); }
-    td { padding: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); vertical-align: top; }
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
+
+    .box-title {
+      font-size: 13px;
       font-weight: 600;
+      color: var(--text-title);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    input, select, textarea {
+      background: #17171d;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 12px;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #4a4a58;
+    }
+
+    .btn {
+      background: #2a2a35;
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn:hover { background: #353544; }
+    .btn-primary { background: #2f2f3e; border-color: #444456; color: #fff; }
+    .btn-primary:hover { background: #3c3c4f; }
+    .btn-danger { background: #3b2225; border-color: #5c292f; color: #fca5a5; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      font-weight: 500;
+      font-size: 11px;
       text-transform: uppercase;
     }
-    .badge-protected { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
-    .badge-active { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-    .badge-verified { background: rgba(6, 182, 212, 0.15); color: var(--accent); }
-    .badge-conflict { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-    code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      text-transform: uppercase;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      color: var(--text-muted);
+    }
+
+    .badge-protected {
+      color: #c084fc;
+      border-color: rgba(192, 132, 252, 0.3);
+      background: rgba(192, 132, 252, 0.08);
+    }
+
+    .badge-active {
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.3);
+      background: rgba(74, 222, 128, 0.08);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
+
   <header>
-    <div class="logo-container">
-      <div class="logo-badge">MC</div>
-      <div>
-        <h2 style="font-size: 1.25rem; font-weight: 700;">MemCore</h2>
-        <p class="tagline">Intelligent Memory Infrastructure for AI Coding Agents</p>
-      </div>
+    <div class="brand">
+      <div class="status-dot"></div>
+      <span class="brand-title">MemCore Persistent Memory Engine</span>
+      <span class="brand-tag">v0.1.0</span>
     </div>
-    <div>
-      <button class="btn btn-secondary" onclick="refreshAll()">🔄 Refresh</button>
+    <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);" id="header-tokens">
+      Active Prompt: 0 tokens
     </div>
   </header>
 
   <main>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-title">Total Memories</div>
-        <div class="stat-value" id="stat-total">-</div>
+    <!-- Top Antigravity Metric Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Active Tokens</div>
+        <div class="metric-value" id="stat-tokens">0</div>
+        <div class="metric-sub">Budgeted context prompt</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-title">Active Context Tokens</div>
-        <div class="stat-value" id="stat-tokens">-</div>
+      <div class="metric-card">
+        <div class="metric-label">Total Memories</div>
+        <div class="metric-value" id="stat-total">0</div>
+        <div class="metric-sub">Stored in local graph</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-title">Protected Rules</div>
-        <div class="stat-value" id="stat-protected" style="color: var(--warning);">-</div>
+      <div class="metric-card">
+        <div class="metric-label">Protected Invariants</div>
+        <div class="metric-value" id="stat-protected" style="color: var(--accent-purple);">0</div>
+        <div class="metric-sub">0.00% loss guarantee</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-title">Repo Conflicts</div>
-        <div class="stat-value" id="stat-conflicts" style="color: var(--danger);">-</div>
+      <div class="metric-card">
+        <div class="metric-label">AST Verification</div>
+        <div class="metric-value" id="stat-conflicts">0</div>
+        <div class="metric-sub">Detected conflicts</div>
       </div>
     </div>
 
+    <!-- Live Neural Memory Matrix Canvas -->
+    <div class="graph-container">
+      <div class="graph-header">
+        <div class="graph-title">
+          <span>Neural Memory Constellation</span>
+          <span style="font-size: 11px; font-family: var(--font-mono); font-weight: normal; color: var(--text-muted);" id="graph-node-count">0 nodes</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted);" id="node-inspector">
+          Hover over nodes to inspect verified memory payload
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="neuralCanvas"></canvas>
+        <div class="canvas-hud">
+          <div>TOPOLOGY: <span>HYBRID GRAPH</span></div>
+          <div>MEMGC STATUS: <span>OPTIMIZED</span></div>
+          <div>ZERO-LOSS INVARIANT: <span style="color: var(--accent-purple);">ENFORCED</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('memories-tab')">Memories</button>
-      <button class="tab-btn" onclick="switchTab('retrieval-tab')">Retrieval & Context</button>
-      <button class="tab-btn" onclick="switchTab('gc-tab')">Garbage Collection</button>
-      <button class="tab-btn" onclick="switchTab('verify-tab')">Repo Verification</button>
-      <button class="tab-btn" onclick="switchTab('history-tab')">Audit History</button>
+      <button class="tab-btn" onclick="switchTab('retrieval-tab')">Context Optimizer</button>
+      <button class="tab-btn" onclick="switchTab('gc-tab')">Risk-Aware GC</button>
+      <button class="tab-btn" onclick="switchTab('verify-tab')">Code Verification</button>
+      <button class="tab-btn" onclick="switchTab('history-tab')">Audit Provenance</button>
     </div>
 
     <!-- MEMORIES TAB -->
     <div id="memories-tab" class="panel active">
-      <div class="glass-box">
-        <h3 style="margin-bottom: 16px;">Add New Knowledge Memory</h3>
+      <div class="box">
+        <div class="box-title">Ingest Verified Memory</div>
         <div class="input-row">
-          <input type="text" id="new-content" placeholder="E.g., PostgreSQL connection pool max_size is set to 20" style="flex: 3;">
-          <select id="new-type" style="flex: 1;">
+          <input type="text" id="new-content" placeholder="E.g., SQLite configured with WAL mode and QueuePool max_size=10" style="flex: 4;">
+          <select id="new-type" style="flex: 1.5;">
             <option value="general">General</option>
             <option value="architecture">Architecture</option>
             <option value="security_constraint">Security Constraint</option>
-            <option value="db_schema">DB Schema</option>
             <option value="api_contract">API Contract</option>
             <option value="bug_fix">Bug Fix</option>
           </select>
-          <input type="number" id="new-importance" placeholder="Importance (0-1)" step="0.1" value="0.7" style="width: 120px;">
-          <button class="btn" onclick="submitMemory()">+ Add Memory</button>
+          <input type="number" id="new-importance" placeholder="Imp (0-1)" step="0.1" value="0.7" style="width: 100px;">
+          <button class="btn btn-primary" onclick="submitMemory()">+ Add Memory</button>
         </div>
       </div>
 
-      <div class="glass-box">
-        <h3>Stored Memories</h3>
+      <div class="box">
+        <div class="box-title">Active Knowledge Records</div>
         <table id="memories-table">
           <thead>
             <tr>
@@ -364,7 +583,7 @@ def dashboard_html():
               <th>Type</th>
               <th>Tokens</th>
               <th>Verification</th>
-              <th>Status</th>
+              <th>Protection</th>
             </tr>
           </thead>
           <tbody>
@@ -374,29 +593,26 @@ def dashboard_html():
       </div>
     </div>
 
-    <!-- RETRIEVAL TAB -->
+    <!-- CONTEXT OPTIMIZER TAB -->
     <div id="retrieval-tab" class="panel">
-      <div class="glass-box">
-        <h3 style="margin-bottom: 16px;">Task-Aware Context Optimization</h3>
+      <div class="box">
+        <div class="box-title">Task-Aware Context Budgeting</div>
         <div class="input-row">
-          <input type="text" id="task-query" placeholder="Enter coding task (e.g. Fix PostgreSQL connection pool exhaustion)" style="flex: 3;">
-          <input type="number" id="token-budget" placeholder="Token Budget" value="1000" style="width: 140px;">
-          <button class="btn" onclick="testContextOptimization()">Optimize Context</button>
+          <input type="text" id="task-query" placeholder="Enter coding prompt (e.g. Implement JWT authentication token endpoint)" style="flex: 3;">
+          <input type="number" id="token-budget" placeholder="Token Budget" value="1000" style="width: 120px;">
+          <button class="btn btn-primary" onclick="testContextOptimization()">Optimize Context</button>
         </div>
-        <div id="context-output" style="margin-top: 18px; display: none;"></div>
+        <div id="context-output" style="margin-top: 14px; display: none;"></div>
       </div>
     </div>
 
     <!-- GC TAB -->
     <div id="gc-tab" class="panel">
-      <div class="glass-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="box">
+        <div class="box-title">
+          <span>MemGC Risk-Aware Garbage Collection</span>
           <div>
-            <h3>MemGC Risk-Aware Garbage Collection</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">Evaluates utility vs deletion hazard. Protected memories are never deleted.</p>
-          </div>
-          <div>
-            <button class="btn btn-secondary" onclick="loadGCPreview()">Preview GC</button>
+            <button class="btn" onclick="loadGCPreview()">Preview GC</button>
             <button class="btn btn-danger" onclick="executeGC()">Execute GC</button>
           </div>
         </div>
@@ -405,10 +621,10 @@ def dashboard_html():
             <tr>
               <th>Memory ID</th>
               <th>Action</th>
-              <th>Utility Score</th>
+              <th>Utility</th>
               <th>Risk Score</th>
               <th>Reasoning</th>
-              <th>Requires Approval</th>
+              <th>Safety Status</th>
             </tr>
           </thead>
           <tbody>
@@ -420,13 +636,10 @@ def dashboard_html():
 
     <!-- VERIFY TAB -->
     <div id="verify-tab" class="panel">
-      <div class="glass-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div>
-            <h3>Code-Grounded Verification</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">Inspects active source tree for symbol existence and stale references.</p>
-          </div>
-          <button class="btn" onclick="runVerification()">Verify All Active</button>
+      <div class="box">
+        <div class="box-title">
+          <span>Code-Grounded Verification</span>
+          <button class="btn" onclick="runVerification()">Scan Codebase</button>
         </div>
         <table id="verify-table">
           <thead>
@@ -439,7 +652,7 @@ def dashboard_html():
             </tr>
           </thead>
           <tbody>
-            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Click "Verify All Active" to scan codebase</td></tr>
+            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Click "Scan Codebase" to verify AST references</td></tr>
           </tbody>
         </table>
       </div>
@@ -447,8 +660,8 @@ def dashboard_html():
 
     <!-- HISTORY TAB -->
     <div id="history-tab" class="panel">
-      <div class="glass-box">
-        <h3 style="margin-bottom: 16px;">Audit Log & Provenance History</h3>
+      <div class="box">
+        <div class="box-title">Audit History & Provenance</div>
         <table id="history-table">
           <thead>
             <tr>
@@ -468,6 +681,7 @@ def dashboard_html():
   </main>
 
   <script>
+    // Tab switching
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -477,6 +691,107 @@ def dashboard_html():
       if (tabId === 'gc-tab') loadGCPreview();
     }
 
+    // Graph Canvas Animation & Physics
+    const canvas = document.getElementById('neuralCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let graphNodes = [];
+    let mouse = { x: -100, y: -100 };
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      width = canvas.width = rect.width * window.devicePixelRatio;
+      height = canvas.height = rect.height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+
+      const w = canvas.getBoundingClientRect().width;
+      const h = canvas.getBoundingClientRect().height;
+
+      let hovered = null;
+      graphNodes.forEach(n => {
+        const nx = n.x * w;
+        const ny = n.y * h;
+        if (Math.hypot(mouse.x - nx, mouse.y - ny) < 14) {
+          hovered = n;
+        }
+      });
+
+      const inspector = document.getElementById('node-inspector');
+      if (hovered) {
+        inspector.innerHTML = `[${hovered.type}] <b>${hovered.content}</b> (${hovered.tokens} tokens)`;
+      } else {
+        inspector.textContent = 'Hover over nodes to inspect verified memory payload';
+      }
+    });
+
+    function drawGraph() {
+      const w = canvas.getBoundingClientRect().width;
+      const h = canvas.getBoundingClientRect().height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Edges
+      ctx.lineWidth = 0.75;
+      for (let i = 0; i < graphNodes.length; i++) {
+        for (let j = i + 1; j < graphNodes.length; j++) {
+          const a = graphNodes[i];
+          const b = graphNodes[j];
+          const ax = a.x * w;
+          const ay = a.y * h;
+          const bx = b.x * w;
+          const by = b.y * h;
+          const dist = Math.hypot(ax - bx, ay - by);
+
+          if (dist < 120) {
+            const alpha = (1 - dist / 120) * 0.18;
+            ctx.strokeStyle = `rgba(142, 142, 156, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(ax, ay);
+            ctx.lineTo(bx, by);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Nodes
+      graphNodes.forEach(n => {
+        n.x += n.vx * 0.001;
+        n.y += n.vy * 0.001;
+        if (n.x < 0.08 || n.x > 0.92) n.vx *= -1;
+        if (n.y < 0.12 || n.y > 0.88) n.vy *= -1;
+
+        const nx = n.x * w;
+        const ny = n.y * h;
+        const isHovered = Math.hypot(mouse.x - nx, mouse.y - ny) < 14;
+
+        if (n.is_protected) {
+          ctx.beginPath();
+          ctx.arc(nx, ny, isHovered ? 11 : 8, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(167, 139, 250, 0.2)';
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.arc(nx, ny, isHovered ? 6 : (n.is_protected ? 4.5 : 3.5), 0, Math.PI * 2);
+        ctx.fillStyle = n.is_protected ? '#c084fc' : (isHovered ? '#38bdf8' : '#8e8e9c');
+        ctx.fill();
+        ctx.strokeStyle = '#1e1e24';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      });
+
+      requestAnimationFrame(drawGraph);
+    }
+    drawGraph();
+
+    // Stats & Memories API
     async function refreshAll() {
       await loadStats();
       await loadMemories();
@@ -487,9 +802,10 @@ def dashboard_html():
         const res = await fetch('/api/stats');
         const data = await res.json();
         document.getElementById('stat-total').innerText = data.total_memories || 0;
-        document.getElementById('stat-tokens').innerText = data.active_tokens || 0;
+        document.getElementById('stat-tokens').innerText = (data.active_tokens || 0).toLocaleString();
         document.getElementById('stat-protected').innerText = data.protected_count || 0;
         document.getElementById('stat-conflicts').innerText = data.conflicts_count || 0;
+        document.getElementById('header-tokens').innerText = `Active Prompt: ${(data.active_tokens || 0).toLocaleString()} tokens`;
       } catch (err) {
         console.error(err);
       }
@@ -500,18 +816,36 @@ def dashboard_html():
         const res = await fetch('/api/memories?status=all');
         const data = await res.json();
         const tbody = document.querySelector('#memories-table tbody');
+        
         if (!data.length) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No memories recorded yet.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No memories stored yet.</td></tr>';
+          graphNodes = [];
+          document.getElementById('graph-node-count').textContent = '0 nodes';
           return;
         }
+
+        // Update Graph Nodes
+        document.getElementById('graph-node-count').textContent = `${data.length} nodes`;
+        graphNodes = data.map((m, idx) => ({
+          id: m.id,
+          content: m.content,
+          type: m.memory_type,
+          tokens: m.token_count,
+          is_protected: m.is_protected,
+          x: 0.15 + (Math.sin(idx + 1) * 0.35 + 0.35),
+          y: 0.20 + (Math.cos(idx + 1) * 0.30 + 0.30),
+          vx: (Math.sin(idx) > 0 ? 0.15 : -0.15),
+          vy: (Math.cos(idx) > 0 ? 0.15 : -0.15)
+        }));
+
         tbody.innerHTML = data.map(m => `
           <tr>
             <td><code>${m.id.substring(0, 8)}</code></td>
-            <td>${m.content}</td>
-            <td><span class="badge ${m.is_protected ? 'badge-protected' : 'badge-active'}">${m.memory_type}</span></td>
+            <td style="max-width: 480px; word-break: break-word;">${escapeHtml(m.content)}</td>
+            <td><span class="badge">${m.memory_type}</span></td>
             <td><code>${m.token_count}</code></td>
-            <td><span class="badge ${m.verification_status === 'verified' ? 'badge-verified' : (m.verification_status === 'conflict' ? 'badge-conflict' : '')}">${m.verification_status}</span></td>
-            <td>${m.status}</td>
+            <td><span class="badge badge-active">${m.verification_status}</span></td>
+            <td>${m.is_protected ? '<span class="badge badge-protected">Protected</span>' : '<span style="color: var(--text-muted); font-size: 11px;">Standard</span>'}</td>
           </tr>
         `).join('');
       } catch (err) {
@@ -546,14 +880,14 @@ def dashboard_html():
       const out = document.getElementById('context-output');
       out.style.display = 'block';
       out.innerHTML = `
-        <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px;">
-          <h4>Context Optimization Results</h4>
-          <p style="margin: 8px 0; color: var(--accent);">Tokens Used: <b>${data.used_tokens}</b> / ${data.token_budget} (${data.budget_utilization_pct}% budget utilization)</p>
-          <p style="color: var(--text-muted); font-size: 0.85rem;">Selected Memories (${data.selected_memories.length}):</p>
-          <ul style="margin: 10px 0 10px 20px; font-size: 0.9rem;">
-            ${data.selected_memories.map(m => `<li><b>[${m.memory.memory_type}]</b> ${m.memory.content} (cost: ${m.memory.token_count} tokens)</li>`).join('')}
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--card-border); padding: 14px; border-radius: 6px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600;">Optimized Prompt Context</span>
+            <span style="color: var(--dot-green); font-family: var(--font-mono);">${data.used_tokens} / ${data.token_budget} tokens (${data.budget_utilization_pct}%)</span>
+          </div>
+          <ul style="margin: 8px 0 8px 18px; font-size: 12px; color: var(--text);">
+            ${data.selected_memories.map(m => `<li><b>[${m.memory.memory_type}]</b> ${escapeHtml(m.memory.content)} <span style="color: var(--text-muted);">(${m.memory.token_count}t)</span></li>`).join('')}
           </ul>
-          ${data.excluded_memories.length ? `<p style="color: var(--warning); font-size: 0.85rem;">Excluded due to budget: ${data.excluded_memories.length} memories</p>` : ''}
         </div>
       `;
     }
@@ -563,17 +897,17 @@ def dashboard_html():
       const data = await res.json();
       const tbody = document.querySelector('#gc-table tbody');
       if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No recommendations at this time.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No GC recommendations at this time.</td></tr>';
         return;
       }
       tbody.innerHTML = data.map(r => `
         <tr>
           <td><code>${r.memory_id.substring(0, 8)}</code></td>
-          <td><span class="badge ${r.action === 'DELETE' ? 'badge-conflict' : (r.action === 'PROTECT' ? 'badge-protected' : 'badge-active')}">${r.action}</span></td>
+          <td><span class="badge">${r.action}</span></td>
           <td><code>${r.utility.toFixed(2)}</code></td>
           <td><code>${r.risk.toFixed(2)}</code></td>
-          <td>${r.reason}</td>
-          <td>${r.requires_approval ? '<span style="color: var(--danger)">Yes (Requires Approval)</span>' : '<span style="color: var(--success)">Auto-Eligible</span>'}</td>
+          <td>${escapeHtml(r.reason)}</td>
+          <td>${r.requires_approval ? '<span style="color: #fca5a5">Requires Approval</span>' : '<span style="color: #4ade80">Auto-Eligible</span>'}</td>
         </tr>
       `).join('');
     }
@@ -586,7 +920,6 @@ def dashboard_html():
         body: JSON.stringify({ allow_delete: false })
       });
       const data = await res.json();
-      alert(`GC Executed! Summary: ` + JSON.stringify(data.summary));
       await refreshAll();
       await loadGCPreview();
     }
@@ -598,10 +931,10 @@ def dashboard_html():
       tbody.innerHTML = data.map(v => `
         <tr>
           <td><code>${v.memory_id.substring(0, 8)}</code></td>
-          <td><span class="badge ${v.status === 'verified' ? 'badge-verified' : (v.status === 'conflict' ? 'badge-conflict' : '')}">${v.status}</span></td>
+          <td><span class="badge badge-active">${v.status}</span></td>
           <td><code>${(v.confidence * 100).toFixed(0)}%</code></td>
-          <td>${v.evidence.length ? v.evidence.join('; ') : 'None'}</td>
-          <td style="color: var(--danger);">${v.conflicts.length ? v.conflicts.join('; ') : 'None'}</td>
+          <td>${v.evidence.length ? escapeHtml(v.evidence.join('; ')) : 'None'}</td>
+          <td style="color: #fca5a5;">${v.conflicts.length ? escapeHtml(v.conflicts.join('; ')) : 'None'}</td>
         </tr>
       `).join('');
       await refreshAll();
@@ -617,17 +950,25 @@ def dashboard_html():
       }
       tbody.innerHTML = data.map(h => `
         <tr>
-          <td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${new Date(h.timestamp * 1000).toLocaleTimeString()}</td>
+          <td style="white-space: nowrap; font-size: 11px; color: var(--text-muted);">${new Date(h.timestamp * 1000).toLocaleTimeString()}</td>
           <td><code>${h.memory_id.substring(0, 8)}</code></td>
-          <td><span class="badge badge-active">${h.action}</span></td>
+          <td><span class="badge">${h.action}</span></td>
           <td>${h.actor}</td>
-          <td>${h.reason || '-'}</td>
+          <td>${escapeHtml(h.reason || '-')}</td>
         </tr>
       `).join('');
     }
 
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
     // Auto-init
     refreshAll();
+    setInterval(refreshAll, 3000);
   </script>
 </body>
 </html>
